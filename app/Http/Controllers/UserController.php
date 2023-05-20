@@ -6,6 +6,7 @@ use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -55,6 +56,20 @@ class UserController extends Controller
 
         return response()->json([
             'user' => new UserResource($user->refresh()),
+        ], 200);
+    }
+
+    public function authRetrieve() {
+        $users = User::all();
+        $user = User::find(1);
+        $auth = auth()->user();
+
+        return response()->json([
+            'data' => [
+                'users' => $users,
+                'user' => $user,
+                'auth' => $auth
+            ]
         ], 200);
     }
 }

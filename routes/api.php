@@ -14,9 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
+Route::middleware('auth:sanctum')->prefix('/')->group(function(){
+    Route::post('users/auth-retrieve',  [\App\Http\Controllers\UserController::class, 'authRetrieve']);
+
+});
 
 
 Route::resource('users', \App\Http\Controllers\UserController::class)->only([
@@ -27,3 +28,7 @@ Route::resource('users', \App\Http\Controllers\UserController::class)->only([
     'show',
 
 ]);
+
+//Route::prefix('/')->group(function(){
+//    Route::post('users/auth-retrieve',  [\App\Http\Controllers\UserController::class, 'authRetrieve']);
+//})->middleware('auth:sanctum');

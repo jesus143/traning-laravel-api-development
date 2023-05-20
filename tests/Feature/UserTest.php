@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class UserTest extends TestCase
@@ -138,5 +139,34 @@ class UserTest extends TestCase
         dd($data);
 
 //        $this->assertNotEmpty(1, $data['user']['status']);
+    }
+
+
+    public function test_user_authenticated_retrieve_data() {
+        $user = User::factory()->create(['name' => 'John Doe']);
+        $accessToken = $user->createToken('user-register')->accessToken;
+
+        Sanctum::actingAs($user);
+
+        $user = User::factory()->create([
+            'name' => 'Jane Doe'
+        ]);
+
+        $attributes = [
+            'name' =>  'John Doe'
+        ];
+
+       $response = $this->post('api/users/auth-retrieve', $attributes, [
+            // 'Authorization' => 'Bearer ' . $accessToken->token,
+           "Accept"=>"application/json"
+        ]);
+
+       $response->assertOk();
+
+       $data = $response->decodeResponseJson()['data'];
+
+       $this->assertNotEmpty($data['user']['name']);
+       $this->assertNotEmpty($data['users'][0]['name']);
+       $this->assertNotEmpty($data['auth']['name']);
     }
 }
